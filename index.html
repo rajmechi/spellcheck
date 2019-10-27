@@ -1,0 +1,218 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Example Domain</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <style type="text/css">
+    body { 
+        /* background-image: url("https://kbdevstorage1.blob.core.windows.net/asset-blobs/19713_en_1"); */
+        background-image: url("https://kbdevstorage1.blob.core.windows.net/asset-blobs/19873_en_1");
+        background-color: #cccccc;
+        margin: 0;
+        padding: 0;
+        font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+        background-size: 1300px 720px;
+    }
+    div {
+        width: 600px;
+        margin: 5em auto;
+        padding: 2em;
+        background-color: #fdfdff;
+        border-radius: 0.5em;
+        box-shadow: 2px 3px 7px 2px rgba(0,0,0,0.02);
+    }
+    a:link, a:visited {
+        color: #38488f;
+        text-decoration: none;
+    }
+    @media (max-width: 700px) {
+        div {
+            margin: 0 auto;
+            width: auto;
+        }
+    }
+    .button {
+   background-color: #4CAF50;
+   border: none;
+   color: white;
+   padding: 4px 10px;
+   text-align: center;
+   text-decoration: none;
+   display: inline-block;
+   font-size: 16px;
+   margin: 4px 2px;
+   cursor: pointer;
+   box-shadow: 0 8px 16px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+  }
+
+  .button2 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #008CBA;
+  
+}
+
+.button2:hover {
+  background-color: #008CBA;
+  color: white;
+}
+
+.button3 {
+  background-color: white; 
+  color: black; 
+  border: 2px solid #f44336;
+}
+
+.button3:hover {
+  background-color: #f44336;
+  color: white;
+}
+
+  table, th, td {
+
+   }
+    </style> 
+</head>
+<body>
+    
+   
+    <!-- <var id='txtInput'>"hello"</var> -->
+    <div>
+    Select Voice: <select id='voiceList'></select> <br>
+        <p1 id='output' hidden/> </p1> <br>
+
+        <table >
+         <tr>
+           <th>Current Word Sequence Number:</th>
+           <th><p1 id='currentquestion'/> 0  </p1> <br></th>
+        </tr>
+       </table> <br>
+
+       <p1> Click to Listen The Word:</p1>
+       <button id='btnSpeak'  >&#128266;</button> <br> <br>
+  
+       
+
+       <form name="form1" id="myForm">
+       Enter the word: <input type="text" name="wordtocompare" required oninvalid="this.setCustomValidity('this field should not be empty.')">
+       <input type="submit" value="Spell Check" onClick="return checkform();">
+       </form> <br>
+
+       <button id="prev_button" class="button button3" > Previous </button>
+       <button id="next_button" class="button button2" > Next </button>
+
+     </div>
+
+    <script>
+        var arr = ['abandon','abstract','academy','access','accommodate','accompany','accumulate','accurate','achieve','acknowledge','acquire','adapt','adequate','adjacent','adjust','administrate','adult','advocate','affect','aggregate','aid','albeit','allocate','alter','alternative','ambiguous','amend','analogy','analyse','annual','anticipate','apparent','append','appreciate','approach','appropriate','approximate','arbitrary','area','aspect','assemble','assess','assign','assist','assume','assure','attach','attain','attitude','attribute','author','authority','automate','available','aware','behalf','benefit'];
+        var i = 0;
+
+        function nextItem() {
+         i = i + 1; // increase i by one
+         i = i % arr.length; // if we've gone too high, start from `0` again
+         return arr[i]; // give us back the item of where we are now
+        }
+
+        function prevItem() {
+            if (i === 0) { // i would become 0
+                i = arr.length; // so put it at the other end of the array
+            }
+            i = i - 1; // decrease by one
+            return arr[i]; // give us back the item of where we are now
+        }
+
+        window.addEventListener('load', function () {
+            document.getElementById('output').innerHTML = arr[0]; // initial value
+            document.getElementById('prev_button').addEventListener(
+                'click', // we want to listen for a click
+                function (e) { // the e here is the event itself
+                    document.getElementById('output').innerHTML = prevItem();
+                    document.getElementById('currentquestion').innerHTML = i;
+             }
+            );
+    
+            document.getElementById('next_button').addEventListener(
+                'click', // we want to listen for a click
+                function (e) { // the e here is the event itself
+                    document.getElementById('output').innerHTML = nextItem();
+                    document.getElementById('currentquestion').innerHTML = i;
+             }
+            );
+        });
+
+        // code for speach 
+
+        var txtInput = document.querySelector('#output');
+        var voiceList = document.querySelector('#voiceList');
+        var btnSpeak = document.querySelector('#btnSpeak');
+        var synth = window.speechSynthesis;
+        var voices = [];
+        PopulateVoices();
+        if(speechSynthesis !== undefined){
+            speechSynthesis.onvoiceschanged = PopulateVoices;
+        }
+        btnSpeak.addEventListener('click', ()=> {
+            var toSpeak = new SpeechSynthesisUtterance(document.getElementById('output').innerHTML);
+            //var toSpeak = document.getElementById('output').innerHTML;
+            var selectedVoiceName = voiceList.selectedOptions[0].getAttribute('data-name');
+            console.log(toSpeak);
+            console.log(selectedVoiceName);
+            voices.forEach((voice)=>{
+                if(voice.name === selectedVoiceName){
+                    toSpeak.voice = voice;
+                }
+            });
+            synth.speak(toSpeak);
+        });
+        function PopulateVoices(){
+            voices = synth.getVoices();
+            var selectedIndex = voiceList.selectedIndex < 0 ? 0 : voiceList.selectedIndex;
+            voiceList.innerHTML = '';
+            voices.forEach((voice)=>{
+                var listItem = document.createElement('option');
+                listItem.innerHTML = voice.name;
+                listItem.setAttribute('data-lang', voice.lang);
+                listItem.setAttribute('data-name', voice.name);
+                voiceList.appendChild(listItem);
+            });
+            voiceList.selectedIndex = selectedIndex;
+        }
+
+        // compare strings
+        function checkform(){
+        var form1 = document.getElementById('myForm');
+        if(form1.wordtocompare.value != document.getElementById('output').innerHTML)
+        {
+           alert("Wrong spelling..!!!!");
+           form1.wordtocompare.focus();
+           return false;
+        }
+          alert("Right answer..");
+          document.getElementById('output').innerHTML = nextItem();
+          document.getElementById('currentquestion').innerHTML = i;
+          return false;
+          //return true;
+        }
+
+         function compareStr() {
+            var string1 = document.getElementById('output').innerHTML;
+            var string2 = document.getElementById('myForm').innerHTML;
+            console.log(string1);
+            console.log(string2);
+            var result = string1.localeCompare(string2);
+
+            document.getElementById("test").innerHTML = result;
+         }
+
+
+    </script>
+</body>
+</html>
