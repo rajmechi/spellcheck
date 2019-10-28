@@ -11,3 +11,6 @@ https://github.com/rajmechi/spellcheck/blob/master/index.html#L115
 **you can use below to convert word list into comma seperated strings:** 
 
 https://delim.co/#
+
+
+--
